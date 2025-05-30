@@ -62,6 +62,9 @@
 
 
 import { useEffect, useState } from 'react';
+import Home from './components/Home';
+import About from './components/About'; // Importation du composant About
+ import Footer from './components/Footer'; // Importation du composant Footer (non utilisé ici)
 
 function App() {
   const [text, setText] = useState('');
@@ -198,110 +201,112 @@ function App() {
     // </>
 
     <>
-      <section className="flex flex-col justify-center items-center  w-[100vw] ">
-        <div className="max-w-2xl mx-auto p-4 space-y-6">
-          <h1 className="text-3xl font-bold text-center">Un lecteur de texte</h1>
-          <p className="text-center text-gray-600">Entrez un texte, cliquez sur lire pour écouter</p>
+    <Home />
+    <About />
+     <section className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+  <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
+    <h1 className="text-3xl font-bold text-blue-600 text-center">Un lecteur de texte</h1>
+    <p className="text-center text-gray-600">
+      Entrez un texte dans le champ ci-dessous, puis cliquez sur <strong>Lire</strong> pour l’écouter.
+    </p>
 
-          <textarea
-            className="w-full h-40 p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Écrivez un texte"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          ></textarea>
+    <textarea
+      className="w-full h-40 p-4 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      placeholder="Écrivez un texte ici..."
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+    ></textarea>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block mb-1 font-medium">Voix :</label>
-              <select
-                className="w-full p-2 border rounded-md"
-                onChange={(e) =>
-                  setSelectedVoice(voices.find((v) => v.name === e.target.value))
-                }
-              >
-                {voices.map((voice, i) => (
-                  <option key={i} value={voice.name}>
-                    {voice.name} ({voice.lang})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">Voix :</label>
+        <select
+          className="w-full p-3 border border-gray-300 rounded-lg"
+          onChange={(e) => setSelectedVoice(voices.find((v) => v.name === e.target.value))}
+        >
+          {voices.map((voice, i) => (
+            <option key={i} value={voice.name}>
+              {voice.name} ({voice.lang})
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">Vitesse : {rate}</label>
+        <input
+          type="range"
+          min="0.5"
+          max="2"
+          step="0.1"
+          value={rate}
+          onChange={(e) => setRate(parseFloat(e.target.value))}
+          className="w-full accent-blue-600"
+        />
+      </div>
+    </div>
 
-          <div>
-            <label className="block font-medium mb-1">Vitesse : {rate}</label>
-            <input
-              type="range"
-              min="0.5"
-              max="2"
-              step="0.1"
-              value={rate}
-              onChange={(e) => setRate(parseFloat(e.target.value))}
-              className="w-full"
-            />
-          </div>
+    <div>
+      <label className="block mb-2 text-sm font-medium text-gray-700">Tonalité : {pitch}</label>
+      <input
+        type="range"
+        min="0"
+        max="2"
+        step="0.1"
+        value={pitch}
+        onChange={(e) => setPitch(parseFloat(e.target.value))}
+        className="w-full accent-blue-600"
+      />
+    </div>
 
-          <div>
-            <label className="block font-medium mb-1">Tonalité : {pitch}</label>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.1"
-              value={pitch}
-              onChange={(e) => setPitch(parseFloat(e.target.value))}
-              className="w-full"
-            />
-          </div>
+    <div className="flex flex-wrap gap-4 justify-center pt-4">
+      {!isPlaying && (
+        <button
+          onClick={handleTextReading}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Lire
+        </button>
+      )}
 
-          <div className="flex flex-wrap gap-4 justify-center">
-            {!isPlaying && (
-              <button
-                onClick={handleTextReading}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-              >
-                Lire
-              </button>
-            )}
-            {isPlaying && !isPaused && (
-              <>
-                <button
-                  onClick={pauseReading}
-                  className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-                >
-                  Pause
-                </button>
-                <button
-                  onClick={stopReading}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                >
-                  Arrêter
-                </button>
-              </>
-            )}
-            {isPaused && (
-              <>
-                <button
-                  onClick={resumeReading}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                >
-                  Reprendre
-                </button>
-                <button
-                  onClick={stopReading}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                >
-                  Arrêter
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-    
-      <footer className="mt-8 text-center text-gray-600 text-sm">
-        <p>© {new Date().getFullYear()} Lecteur Vocal. Tous droits réservés.</p>
-      </footer>
+      {isPlaying && !isPaused && (
+        <>
+          <button
+            onClick={pauseReading}
+            className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+          >
+            Pause
+          </button>
+          <button
+            onClick={stopReading}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            Arrêter
+          </button>
+        </>
+      )}
+
+      {isPaused && (
+        <>
+          <button
+            onClick={resumeReading}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            Reprendre
+          </button>
+          <button
+            onClick={stopReading}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            Arrêter
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</section>
+
+    <Footer />
+     
     </>
   );
 }
